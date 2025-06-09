@@ -10,8 +10,8 @@ def detect_scenes(video_path, output_dir, interval=5):
 
     for t in range(0, duration, interval):
         frame = clip.get_frame(t)
-        img_path = os.path.join(output_dir, f"scene_{t}.jpg")
         img = Image.fromarray(frame)
+        img_path = os.path.join(output_dir, f"scene_{t}.jpg")
         img.save(img_path)
         results.append((t, img_path))
 

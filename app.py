@@ -1,27 +1,34 @@
-import streamlit as st, tempfile, os
+import streamlit as st
+import tempfile
+import os
 from utils.video_utils import detect_scenes
 from utils.ai_image_utils import generate_prompt_from_timecode, generate_image
+from PIL import Image
 
-st.title("🎬 Scene Detection + DALL·E Image Generator")
+st.title("🎬 Scene Detection + DALL·E AI Image Generator")
 
-u = st.file_uploader("Upload video", type=["mp4","mov"])
-if u:
-    tf = tempfile.NamedTemporaryFile(delete=False, suffix=".mp4")
-    tf.write(u.read()); video_path = tf.name
+uploaded_video = st.file_uploader("Tải lên video", type=["mp4", "mov"])
 
-    st.spinner("Detecting scenes...")
-    scenes = detect_scenes(video_path, tempfile.mkdtemp(), threshold=30.0)
+if uploaded_video:
+    with tempfile.NamedTemporaryFile(delete=False, suffix=".mp4") as tmp_video:
+        tmp_video.write(uploaded_video.read())
+        video_path = tmp_video.name
+
+    with st.spinner("Đang phát hiện cảnh từ video..."):
+        output_dir = tempfile.mkdtemp()
+        scenes = detect_scenes(video_path, output_dir, threshold=30.0)
 
     if scenes:
-        st.success(f"Detected {len(scenes)} scenes.")
-        for t, img in scenes:
-            c1, c2 = st.columns([1,2])
-            with c1: st.image(img, caption=f"Scene @ {t}s", width=200)
-            with c2:
-                prompt = generate_prompt_from_timecode(t)
+        st.success(f"🎞️ Đã phát hiện {len(scenes)} cảnh!")
+        for timecode, img_path in scenes:
+            col1, col2 = st.columns([1, 2])
+            with col1:
+                st.image(img_path, caption=f"Cảnh tại {timecode}s", width=250)
+            with col2:
+                prompt = generate_prompt_from_timecode(timecode)
                 st.markdown(f"**Prompt:** `{prompt}`")
-                if st.button(f"Generate AI image for {t}s", key=t):
-                    url = generate_image(prompt)
-                    st.image(url, caption="DALL·E Output", width=256)
+                if st.button(f"🧠 Tạo ảnh AI cho cảnh {timecode}s", key=f"btn_{timecode}"):
+                    img_url = generate_image(prompt)
+                    st.image(img_url, caption="Ảnh AI", width=256)
     else:
-        st.warning("No scene detected.")
+        st.warning("⚠️ Không phát hiện được cảnh nào.")

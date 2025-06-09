@@ -15,7 +15,6 @@ def detect_scenes_ffmpeg(video_path, output_dir, interval=5):
     ]
     subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
-    # Collect all images with timestamp (interval-based)
     results = []
     for i, filename in enumerate(sorted(os.listdir(output_dir))):
         if filename.endswith(".jpg"):

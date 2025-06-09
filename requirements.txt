@@ -1,5 +1,8 @@
 streamlit
 moviepy
+imageio
 imageio-ffmpeg
+decorator
+tqdm
 Pillow
 openai

@@ -1,4 +1,5 @@
-import cv2, os
+import cv2
+import os
 
 def detect_scenes(video_path, output_dir, threshold=30.0):
     os.makedirs(output_dir, exist_ok=True)
@@ -7,11 +8,13 @@ def detect_scenes(video_path, output_dir, threshold=30.0):
     prev_frame = None
     frame_count = 0
     scene_idx = 0
-    scenes=[]
+    scenes = []
 
     while True:
         ret, frame = cap.read()
-        if not ret: break
+        if not ret:
+            break
+
         gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
         if prev_frame is not None:
             diff = cv2.absdiff(gray, prev_frame)
@@ -22,6 +25,7 @@ def detect_scenes(video_path, output_dir, threshold=30.0):
                 cv2.imwrite(path, frame)
                 scenes.append((timestamp, path))
                 scene_idx += 1
+
         prev_frame = gray
         frame_count += 1
 

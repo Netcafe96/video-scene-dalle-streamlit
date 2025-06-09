@@ -1,19 +1,25 @@
 import os
-from moviepy.editor import VideoFileClip
+import subprocess
 from PIL import Image
 
-def detect_scenes(video_path, output_dir, interval=5):
+def detect_scenes_ffmpeg(video_path, output_dir, interval=5):
     os.makedirs(output_dir, exist_ok=True)
-    clip = VideoFileClip(video_path)
-    duration = int(clip.duration)
+    pattern = os.path.join(output_dir, "scene_%03d.jpg")
+
+    command = [
+        "ffmpeg",
+        "-i", video_path,
+        "-vf", f"fps=1/{interval}",
+        "-q:v", "2",
+        pattern
+    ]
+    subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+
+    # Collect all images with timestamp (interval-based)
     results = []
-
-    for t in range(0, duration, interval):
-        frame = clip.get_frame(t)
-        img = Image.fromarray(frame)
-        img_path = os.path.join(output_dir, f"scene_{t}.jpg")
-        img.save(img_path)
-        results.append((t, img_path))
-
-    clip.close()
+    for i, filename in enumerate(sorted(os.listdir(output_dir))):
+        if filename.endswith(".jpg"):
+            timecode = i * interval
+            full_path = os.path.join(output_dir, filename)
+            results.append((timecode, full_path))
     return results

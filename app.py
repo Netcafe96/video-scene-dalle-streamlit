@@ -14,8 +14,8 @@ if uploaded:
         video_path = f.name
 
     st.info("Processing video... extracting frames every 5 seconds.")
-    out = tempfile.mkdtemp()
-    scenes = detect_scenes(video_path, out, interval=5)
+    output_dir = tempfile.mkdtemp()
+    scenes = detect_scenes(video_path, output_dir, interval=5)
 
     if scenes:
         st.success(f"Extracted {len(scenes)} frames.")

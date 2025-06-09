@@ -1,8 +1,8 @@
 import streamlit as st
 import tempfile
 import os
-from utils.video_utils import detect_scenes
-from utils.ai_image_utils import generate_prompt_from_timecode, generate_image
+from helpers.video_utils import detect_scenes                      # 🛠️ sửa import
+from helpers.ai_image_utils import generate_prompt_from_timecode, generate_image
 from PIL import Image
 
 st.title("🎬 Scene Detection + DALL·E AI Image Generator")
